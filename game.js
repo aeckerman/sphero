@@ -1,11 +1,5 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
-var score = 0;
-var scoreText;
-
-var life = 4;
-var lifeText;
-
 function preload() {
 
 	game.load.image('sky', 'images/sky.png');
@@ -37,7 +31,7 @@ function create() {
 	var ledge = platforms.create(400, 400, 'ground');
 	ledge.body.immovable = true;
 	ledge = platforms.create(-150, 250, 'ground');
-	ledge.body.immovable = true
+	ledge.body.immovable = true;
 
 	player = game.add.sprite(32, game.world.height - 150, 'dude');
 	game.physics.arcade.enable(player);
@@ -67,21 +61,24 @@ function create() {
 	}*/
 
 	balls = game.add.group();
-
 	balls.enableBody = true;
 
-	for (var i = 0; i < 12; i++) {
-		var ball = balls.create(i * 70, 0, 'ball');
-		ball.body.gravity.y = 70;
-		ball.body.bounce.y = 0.7 + Math.random() * 0.2;
+	for (var i = 0; i < 6; i++) {
+		var ball = balls.create(i * 140, 0, 'ball');
+		ball.body.gravity.y = 200;
+		ball.body.bounce.y = 1;
+
+		if (ball.y >= game.world.height) {
+			ball.collideWorldBounds = false;
+		} else {
+			ball.collideWorldBounds = true;
+		}
 	}
 
-	jewel = game.add.sprite(616, game.world.height - 150, 'jewel');
+	jewel = game.add.sprite(84, 166, 'jewel');
 	game.physics.arcade.enable(jewel);
 
-	jewel.body.bounce.y = 0.2;
-	jewel.body.gravity.y = 300;
-	jewel.body.collideWorldBounds = true;
+	jewel.body.immovable = true;
 
 	healths = game.add.group();
 	healths.enableBody = true;
@@ -91,9 +88,6 @@ function create() {
 		health.body.gravity.y = 70;
 		health.body.bounce.y = 0.2;
 	}*/
-
-	scoreText =  game.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#fff' });
-	lifeText = game.add.text(646, 16, 'Health: 0', { fontSize: '32px', fill: '#fff' });
 
 }
 
@@ -106,27 +100,16 @@ function create() {
 
 }*/
 
-function collectHealth(player, health) {
-	
-	health.kill();
-
-	life += 1;
-	lifeText.text = 'Health: ' + life; 
-
-}
-
 function ballAttack(player, ball) {
 
-	life -= 1;
-	lifeText.text = 'Health: ' + life;
+	player.kill();
+	loseText = game.add.text(150, 255, 'You Lose!', { fontSize: '100px', fill: '#e74c3c' });
 
 }
 
-function collectJewel(player, jewel) {
+function hitJewel(player, jewel) {
 
-	var health = healths.create(32, game.world.height - 150, 'health');
-	health.body.gravity.y = 70;
-	health.body.bounce.y = 0.2;
+	winText = game.add.text(200, 225, 'You Win!', { fontSize: '100px', fill: '#f1c40f' });
 
 }
 
@@ -160,21 +143,13 @@ function update() {
 		player.body.velocity.y = -350;
 	}
 
-	if (life <= 0) {
-
-		player.kill()
-
-	}
-
 	//game.physics.arcade.collide(stars, platforms);
 	//game.physics.arcade.overlap(player, stars, collectStar, null, this);
 
 	game.physics.arcade.collide(balls, platforms);
 	game.physics.arcade.collide(player, balls, ballAttack, null , this)
+	game.physics.arcade.collide(balls, balls);
 
-	game.physics.arcade.collide(healths, platforms);
-	game.physics.arcade.collide(player, healths, collectHealth, null, this)
-
-	game.physics.arcade.collide(player, jewel, collectJewel, null, this)
+	game.physics.arcade.collide(player, jewel, hitJewel, null, this)
 
 }
