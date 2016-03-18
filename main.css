@@ -2,3 +2,20 @@ canvas {
 	margin-right: auto;
 	margin-left: auto;
 }
+
+body {
+	font-family: 'Source Code Pro';
+}
+
+a {
+	text-decoration: none;
+	color: #2ecc71;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+#msg {
+	padding-bottom: 15px;
+}
